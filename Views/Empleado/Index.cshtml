@@ -1,0 +1,34 @@
+﻿@{
+    ViewBag.Title = "Empleados";
+}
+
+<h2>Lista de Empleados</h2>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-striped table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Costo por Hora</th>
+                <th>Provincia</th>
+                <th>Cantón</th>
+                <th>Distrito</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var empleado in Model)
+            {
+                <tr>
+                    <td>@empleado.Id</td>
+                    <td>@empleado.Nombre</td>
+                    <td>@empleado.Costo.ToString("N2")</td>
+                    <td>@empleado.Provincia</td>
+                    <td>@empleado.Canton</td>
+                    <td>@empleado.Distrito</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

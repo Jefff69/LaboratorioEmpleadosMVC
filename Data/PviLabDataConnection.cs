@@ -46,5 +46,26 @@ namespace LaboratorioEmpleadosMVC.Data
 
             return resultados.ToList();
         }
+
+
+
+
+        public void InsertarEmpleado(EmpleadoInsertarViewModel empleado)
+        {
+            var command = new CommandInfo(
+                this,
+                "EXEC dbo.sp_insertEmpleado @nombre, @apellido, @tipoTrabajador, @costoHora, @id_distrito",
+                new DataParameter("@nombre", empleado.Nombre),
+                new DataParameter("@apellido", empleado.Apellido),
+                new DataParameter("@tipoTrabajador", empleado.TipoTrabajador),
+                new DataParameter("@costoHora", empleado.CostoHora),
+                new DataParameter("@id_distrito", empleado.IdDistrito)
+            );
+
+            command.Execute();
+        }
+
+
+
     }
 }

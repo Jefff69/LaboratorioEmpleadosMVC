@@ -1,0 +1,71 @@
+﻿@model LaboratorioEmpleadosMVC.Models.EmpleadoInsertarViewModel
+
+@{
+    ViewBag.Title = "Insertar Empleado";
+}
+
+<h2>Insertar Empleado</h2>
+
+@if (ViewBag.Mensaje != null)
+{
+    <div class="alert alert-info">
+        @ViewBag.Mensaje
+    </div>
+}
+
+@using (Html.BeginForm("InsertarEmpleados", "Empleado", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Nombre, new { @class = "control-label" })
+        @Html.TextBoxFor(model => model.Nombre, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Apellido, new { @class = "control-label" })
+        @Html.TextBoxFor(model => model.Apellido, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Apellido, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        <label class="control-label">Tipo de trabajador</label>
+
+        <div>
+            <label>
+                @Html.RadioButtonFor(model => model.TipoTrabajador, 1)
+                Empleado
+            </label>
+
+            <label style="margin-left: 20px;">
+                @Html.RadioButtonFor(model => model.TipoTrabajador, 2)
+                Supervisor
+            </label>
+        </div>
+
+        @Html.ValidationMessageFor(model => model.TipoTrabajador, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.CostoHora, new { @class = "control-label" })
+        @Html.TextBoxFor(model => model.CostoHora, new { @class = "form-control", type = "number" })
+        @Html.ValidationMessageFor(model => model.CostoHora, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.IdDistrito, new { @class = "control-label" })
+        @Html.TextBoxFor(model => model.IdDistrito, new { @class = "form-control", type = "number" })
+        @Html.ValidationMessageFor(model => model.IdDistrito, "", new { @class = "text-danger" })
+    </div>
+
+    <br />
+
+    <button type="submit" class="btn btn-primary">
+        Guardar Empleado
+    </button>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

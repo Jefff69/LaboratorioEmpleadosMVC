@@ -1,12 +1,16 @@
-﻿using System.Linq;
-using System.Web.Mvc;
-using LaboratorioEmpleadosMVC.Data;
+﻿using LaboratorioEmpleadosMVC.Data;
 using LaboratorioEmpleadosMVC.Models;
+using System;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace LaboratorioEmpleadosMVC.Controllers
 {
     public class EmpleadoController : Controller
     {
+
+        private PviLabDataConnection db = new PviLabDataConnection();
+
         public ActionResult Index()
         {
             using (var db = new PviLabDataConnection())
@@ -31,5 +35,42 @@ namespace LaboratorioEmpleadosMVC.Controllers
                 return View(empleados);
             }
         }
+
+
+
+
+        // GET: Empleado/InsertarEmpleados
+        public ActionResult InsertarEmpleados()
+        {
+            return View();
+        }
+
+
+
+
+        // POST: Empleado/InsertarEmpleados
+        [HttpPost]
+        public ActionResult InsertarEmpleados(EmpleadoInsertarViewModel empleado)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    db.InsertarEmpleado(empleado);
+
+                    ViewBag.Mensaje = "Empleado insertado correctamente.";
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Mensaje = "Error al insertar el empleado: " + ex.Message;
+            }
+
+            return View(empleado);
+        }
+
+
+
+
     }
 }

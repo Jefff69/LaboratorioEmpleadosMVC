@@ -14,6 +14,7 @@
                 <th>Provincia</th>
                 <th>Cantón</th>
                 <th>Distrito</th>
+                <th>Acciones</th>
             </tr>
         </thead>
 
@@ -27,7 +28,17 @@
                     <td>@empleado.Provincia</td>
                     <td>@empleado.Canton</td>
                     <td>@empleado.Distrito</td>
+                    <td>
+                        @Html.ActionLink(
+                            "Editar",
+                            "InsertarEmpleados",
+                            "Empleado",
+                            new { id = empleado.Id },
+                            new { @class = "btn btn-warning btn-sm" }
+                        )
+                    </td>
                 </tr>
+
             }
         </tbody>
     </table>

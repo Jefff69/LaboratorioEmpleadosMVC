@@ -4,7 +4,9 @@
     ViewBag.Title = "Insertar Empleado";
 }
 
-<h2>Insertar Empleado</h2>
+<h2>
+    @(Model.Id > 0 ? "Actualizar Empleado" : "Insertar Empleado")
+</h2>
 
 @if (ViewBag.Mensaje != null)
 {
@@ -15,6 +17,8 @@
 
 @using (Html.BeginForm("InsertarEmpleados", "Empleado", FormMethod.Post, new { @class = "form-horizontal" }))
 {
+    @Html.HiddenFor(model => model.Id)
+
     @Html.AntiForgeryToken()
 
     <div class="form-group">
@@ -59,10 +63,16 @@
         @Html.ValidationMessageFor(model => model.IdDistrito, "", new { @class = "text-danger" })
     </div>
 
+    <div class="form-group">
+        @Html.LabelFor(model => model.Estado, new { @class = "control-label" })
+        @Html.CheckBoxFor(model => model.Estado)
+        @Html.ValidationMessageFor(model => model.Estado, "", new { @class = "text-danger" })
+    </div>
+
     <br />
 
     <button type="submit" class="btn btn-primary">
-        Guardar Empleado
+        @(Model.Id > 0 ? "Actualizar Empleado" : "Insertar Empleado")
     </button>
 }
 

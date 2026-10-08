@@ -18,5 +18,9 @@ namespace LaboratorioEmpleadosMVC.Models
 
         [Required(ErrorMessage = "El distrito es obligatorio.")]
         public int IdDistrito { get; set; }
+
+        public int Id { get; set; }
+
+        public bool Estado { get; set; }
     }
 }

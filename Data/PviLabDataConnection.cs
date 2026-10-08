@@ -67,5 +67,46 @@ namespace LaboratorioEmpleadosMVC.Data
 
 
 
+        public void ActualizarEmpleado(EmpleadoInsertarViewModel empleado)
+        {
+            var command = new CommandInfo(
+                this,
+                "EXEC dbo.sp_updateEmpleado @id, @nombre, @apellido, @tipoTrabajador, @costoHora, @id_distrito, @estado",
+                new DataParameter("@id", empleado.Id),
+                new DataParameter("@nombre", empleado.Nombre),
+                new DataParameter("@apellido", empleado.Apellido),
+                new DataParameter("@tipoTrabajador", empleado.TipoTrabajador),
+                new DataParameter("@costoHora", empleado.CostoHora),
+                new DataParameter("@id_distrito", empleado.IdDistrito),
+                new DataParameter("@estado", empleado.Estado)
+            );
+
+            command.Execute();
+        }
+
+
+
+        public EmpleadoInsertarViewModel ObtenerEmpleadoPorId(int id)
+        {
+            var empleado = this.Query<EmpleadoInsertarViewModel>(
+                @"SELECT 
+            Id,
+            nombre AS Nombre,
+            apellido AS Apellido,
+            tipoTrabajador AS TipoTrabajador,
+            costoHora AS CostoHora,
+            id_distrito AS IdDistrito,
+            estado AS Estado
+          FROM Empleados
+          WHERE Id = @id",
+                new DataParameter("@id", id)
+            ).FirstOrDefault();
+
+            return empleado;
+        }
+
+
+
+
     }
 }

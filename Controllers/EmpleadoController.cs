@@ -40,11 +40,31 @@ namespace LaboratorioEmpleadosMVC.Controllers
 
 
         // GET: Empleado/InsertarEmpleados
-        public ActionResult InsertarEmpleados()
+        public ActionResult InsertarEmpleados(int? id)
         {
-            return View();
-        }
+            try
+            {
+                if (id == null)
+                {
+                    return View(new EmpleadoInsertarViewModel());
+                }
 
+                var empleado = db.ObtenerEmpleadoPorId(id.Value);
+
+                if (empleado == null)
+                {
+                    ViewBag.Mensaje = "No se encontró el empleado.";
+                    return View(new EmpleadoInsertarViewModel());
+                }
+
+                return View(empleado);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Mensaje = "Error al cargar el empleado: " + ex.Message;
+                return View(new EmpleadoInsertarViewModel());
+            }
+        }
 
 
 
@@ -56,14 +76,23 @@ namespace LaboratorioEmpleadosMVC.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    db.InsertarEmpleado(empleado);
+                    if (empleado.Id > 0)
+                    {
+                        db.ActualizarEmpleado(empleado);
 
-                    ViewBag.Mensaje = "Empleado insertado correctamente.";
+                        ViewBag.Mensaje = "Empleado actualizado correctamente.";
+                    }
+                    else
+                    {
+                        db.InsertarEmpleado(empleado);
+
+                        ViewBag.Mensaje = "Empleado insertado correctamente.";
+                    }
                 }
             }
             catch (Exception ex)
             {
-                ViewBag.Mensaje = "Error al insertar el empleado: " + ex.Message;
+                ViewBag.Mensaje = "Error al procesar el empleado: " + ex.Message;
             }
 
             return View(empleado);

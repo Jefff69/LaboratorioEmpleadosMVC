@@ -1,6 +1,7 @@
 ﻿using LaboratorioEmpleadosMVC.Data;
 using LaboratorioEmpleadosMVC.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -39,6 +40,7 @@ namespace LaboratorioEmpleadosMVC.Controllers
 
 
 
+
         // GET: Empleado/InsertarEmpleados
         public ActionResult InsertarEmpleados(int? id)
         {
@@ -46,6 +48,7 @@ namespace LaboratorioEmpleadosMVC.Controllers
             {
                 if (id == null)
                 {
+                    CargarDistritos();
                     return View(new EmpleadoInsertarViewModel());
                 }
 
@@ -53,23 +56,41 @@ namespace LaboratorioEmpleadosMVC.Controllers
 
                 if (empleado == null)
                 {
+                    CargarDistritos();
                     ViewBag.Mensaje = "No se encontró el empleado.";
                     return View(new EmpleadoInsertarViewModel());
                 }
+
+                int idCanton = db.ObtenerCantonDelDistrito(empleado.IdDistrito);
+
+                CargarDistritos(idCanton, empleado.IdDistrito);
 
                 return View(empleado);
             }
             catch (Exception ex)
             {
                 ViewBag.Mensaje = "Error al cargar el empleado: " + ex.Message;
+
+                try
+                {
+                    CargarDistritos();
+                }
+                catch
+                {
+                    ViewBag.IdDistrito = new List<System.Web.Mvc.SelectListItem>();
+                }
+
                 return View(new EmpleadoInsertarViewModel());
             }
         }
 
 
 
-        // POST: Empleado/InsertarEmpleados
+
+
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult InsertarEmpleados(EmpleadoInsertarViewModel empleado)
         {
             try
@@ -79,14 +100,14 @@ namespace LaboratorioEmpleadosMVC.Controllers
                     if (empleado.Id > 0)
                     {
                         db.ActualizarEmpleado(empleado);
-
-                        ViewBag.Mensaje = "Empleado actualizado correctamente.";
+                        TempData["Mensaje"] = "Empleado actualizado correctamente.";
+                        return RedirectToAction("Index");
                     }
                     else
                     {
                         db.InsertarEmpleado(empleado);
-
-                        ViewBag.Mensaje = "Empleado insertado correctamente.";
+                        TempData["Mensaje"] = "Empleado insertado correctamente.";
+                        return RedirectToAction("Index");
                     }
                 }
             }
@@ -95,8 +116,73 @@ namespace LaboratorioEmpleadosMVC.Controllers
                 ViewBag.Mensaje = "Error al procesar el empleado: " + ex.Message;
             }
 
+            CargarDistritos();
+
             return View(empleado);
         }
+
+
+
+
+
+        [HttpGet]
+        public ActionResult ConfirmarEliminar(int id)
+        {
+            var empleado = db.ObtenerEmpleadoPorId(id);
+
+            if (empleado == null)
+            {
+                TempData["Mensaje"] = "No se encontró el empleado.";
+                return RedirectToAction("Index");
+            }
+
+            return View(empleado);
+        }
+
+
+
+
+
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Eliminar(int id)
+        {
+            try
+            {
+                db.EliminarEmpleado(id);
+                TempData["Mensaje"] = "Empleado eliminado correctamente.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Mensaje"] = "Error al eliminar el empleado: " + ex.Message;
+            }
+
+            return RedirectToAction("Index");
+        }
+
+
+
+
+
+
+
+        private void CargarDistritos(int idCanton = 1, int? idDistritoSeleccionado = null)
+        {
+            var distritos = db.ObtenerDistritos(idCanton);
+
+            foreach (var distrito in distritos)
+            {
+                distrito.Selected =
+                    idDistritoSeleccionado.HasValue &&
+                    distrito.Value == idDistritoSeleccionado.Value.ToString();
+            }
+
+            ViewBag.IdDistrito = distritos;
+        }
+
 
 
 

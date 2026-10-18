@@ -1,0 +1,36 @@
+﻿
+@model LaboratorioEmpleadosMVC.Models.EmpleadoInsertarViewModel
+
+@{
+    ViewBag.Title = "Confirmar eliminación";
+}
+
+<h2>Confirmar eliminación</h2>
+
+<p>¿Está seguro de que desea eliminar este empleado?</p>
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <p><strong>ID:</strong> @Model.Id</p>
+        <p><strong>Nombre:</strong> @Model.Nombre @Model.Apellido</p>
+    </div>
+</div>
+
+@using (Html.BeginForm("Eliminar", "Empleado", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+
+    <button type="submit" class="btn btn-danger"
+            onclick="return confirm('¿Confirma definitivamente la eliminación?');">
+        Confirmar eliminación
+    </button>
+
+    @Html.ActionLink(
+        "Cancelar",
+        "Index",
+        "Empleado",
+        null,
+        new { @class = "btn btn-default" }
+    )
+}

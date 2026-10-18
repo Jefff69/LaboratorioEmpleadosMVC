@@ -8,6 +8,7 @@
     @(Model.Id > 0 ? "Actualizar Empleado" : "Insertar Empleado")
 </h2>
 
+
 @if (ViewBag.Mensaje != null)
 {
     <div class="alert alert-info">
@@ -57,11 +58,32 @@
         @Html.ValidationMessageFor(model => model.CostoHora, "", new { @class = "text-danger" })
     </div>
 
+
     <div class="form-group">
-        @Html.LabelFor(model => model.IdDistrito, new { @class = "control-label" })
-        @Html.TextBoxFor(model => model.IdDistrito, new { @class = "form-control", type = "number" })
-        @Html.ValidationMessageFor(model => model.IdDistrito, "", new { @class = "text-danger" })
+        @Html.LabelFor(model => model.IdDistrito, "Distrito",
+            new { @class = "control-label" })
+
+
+
+        <select id="IdDistrito" name="IdDistrito" class="form-control">
+            @foreach (var distrito in (IEnumerable<SelectListItem>)ViewBag.IdDistrito)
+            {
+                <option value="@distrito.Value"
+                        selected="@(distrito.Selected ? "selected" : null)">
+                    @distrito.Text
+                </option>
+            }
+        </select>
+
+
+
+        @Html.ValidationMessageFor(
+            model => model.IdDistrito,
+            "",
+            new { @class = "text-danger" }
+        )
     </div>
+
 
     <div class="form-group">
         @Html.LabelFor(model => model.Estado, new { @class = "control-label" })
@@ -74,6 +96,23 @@
     <button type="submit" class="btn btn-primary">
         @(Model.Id > 0 ? "Actualizar Empleado" : "Insertar Empleado")
     </button>
+
+
+
+    if (Model.Id > 0)
+    {
+        @Html.ActionLink(
+            "Eliminar Empleado",
+            "ConfirmarEliminar",
+            "Empleado",
+            new { id = Model.Id },
+            new { @class = "btn btn-danger" }
+        )
+    }
+
+
+
+
 }
 
 @section Scripts {

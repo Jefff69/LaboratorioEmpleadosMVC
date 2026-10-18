@@ -197,6 +197,7 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Empleado\Index.cshtml" />
     <Content Include="Views\Empleado\InsertarEmpleados.cshtml" />
+    <Content Include="Views\Empleado\ConfirmarEliminar.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

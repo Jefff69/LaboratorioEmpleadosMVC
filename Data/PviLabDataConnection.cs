@@ -86,6 +86,59 @@ namespace LaboratorioEmpleadosMVC.Data
 
 
 
+
+
+        public void EliminarEmpleado(int id)
+        {
+            var command = new CommandInfo(
+                this,
+                "EXEC dbo.sp_deleteEmpleado @id",
+                new DataParameter("@id", id)
+            );
+
+            command.Execute();
+        }
+
+
+
+
+
+        public List<System.Web.Mvc.SelectListItem> ObtenerDistritos(int idCanton = 1)
+        {
+            var distritos = this.Query<
+                System.Web.Mvc.SelectListItem>(
+                @"SELECT
+              CAST(id_Distrito AS varchar(10)) AS Value,
+              nombre AS Text
+          FROM Distrito
+          WHERE id_Canton = @idCanton
+          ORDER BY nombre",
+                new DataParameter("@idCanton", idCanton)
+            ).ToList();
+
+            return distritos;
+        }
+
+
+
+        public int ObtenerCantonDelDistrito(int idDistrito)
+        {
+            var idCanton = this.Query<int>(
+                @"SELECT id_Canton
+          FROM Distrito
+          WHERE id_Distrito = @idDistrito",
+                new DataParameter("@idDistrito", idDistrito)
+            ).FirstOrDefault();
+
+            return idCanton;
+        }
+
+
+
+
+
+
+
         public EmpleadoInsertarViewModel ObtenerEmpleadoPorId(int id)
         {
             var empleado = this.Query<EmpleadoInsertarViewModel>(

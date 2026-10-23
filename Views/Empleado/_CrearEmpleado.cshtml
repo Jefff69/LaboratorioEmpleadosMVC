@@ -1,0 +1,90 @@
+﻿
+@model LaboratorioEmpleadosMVC.Models.EmpleadoInsertarViewModel
+
+@* Formulario parcial para crear un empleado desde el diálogo. *@
+@using (Html.BeginForm(
+    "CrearEmpleadoAjax",
+    "Empleado",
+    FormMethod.Post,
+    new { id = "formCrearEmpleado" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Nombre, "Nombre")
+        @Html.TextBoxFor(
+            model => model.Nombre,
+            new { @class = "form-control" })
+        @Html.ValidationMessageFor(
+            model => model.Nombre, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Apellido, "Apellido")
+        @Html.TextBoxFor(
+            model => model.Apellido,
+            new { @class = "form-control" })
+        @Html.ValidationMessageFor(
+            model => model.Apellido, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        <label class="control-label">Tipo de trabajador</label>
+        <div>
+            <label>
+                @Html.RadioButtonFor(model => model.TipoTrabajador, 1)
+                Empleado
+            </label>
+            <label style="margin-left: 20px;">
+                @Html.RadioButtonFor(model => model.TipoTrabajador, 2)
+                Supervisor
+            </label>
+        </div>
+        @Html.ValidationMessageFor(
+            model => model.TipoTrabajador, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.CostoHora, "Costo por hora")
+        @Html.TextBoxFor(
+            model => model.CostoHora,
+            new { @class = "form-control", type = "number" })
+        @Html.ValidationMessageFor(
+            model => model.CostoHora, "", new { @class = "text-danger" })
+    </div>
+
+    @* Provincia, cantón y distrito se cargarán en cascada con AJAX. *@
+    <div class="form-group">
+        <label for="IdProvincia" class="control-label">Provincia</label>
+        <select id="IdProvincia" name="IdProvincia" class="form-control">
+            <option value="">Seleccione una provincia</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="IdCanton" class="control-label">Cantón</label>
+        <select id="IdCanton" name="IdCanton" class="form-control" disabled>
+            <option value="">Seleccione un cantón</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.IdDistrito, "Distrito",
+            new { @class = "control-label" })
+        <select id="IdDistrito" name="IdDistrito" class="form-control" disabled>
+            <option value="">Seleccione un distrito</option>
+        </select>
+        @Html.ValidationMessageFor(
+            model => model.IdDistrito, "", new { @class = "text-danger" })
+    </div>
+
+    @* Estado se mantiene como campo del modelo. *@
+    <div class="form-group">
+        @Html.LabelFor(model => model.Estado, "Activo")
+        @Html.CheckBoxFor(model => model.Estado)
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Guardar empleado
+    </button>
+}

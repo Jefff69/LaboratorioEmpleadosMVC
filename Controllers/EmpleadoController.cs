@@ -56,6 +56,74 @@ namespace LaboratorioEmpleadosMVC.Controllers
 
 
 
+
+
+        /// <summary>
+        /// Carga el formulario parcial para crear un empleado en el diálogo.
+        /// </summary>
+        [HttpGet]
+        public ActionResult CrearEmpleadoAjax()
+        {
+            // Crea un modelo vacío para el formulario de inserción.
+            var empleado = new EmpleadoInsertarViewModel();
+
+            // Devuelve únicamente la vista parcial, no la página completa.
+            return PartialView("_CrearEmpleado", empleado);
+        }
+
+        /// <summary>
+        /// Recibe y procesa mediante AJAX los datos de un empleado nuevo.
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CrearEmpleadoAjax(EmpleadoInsertarViewModel empleado)
+        {
+            // Comprueba que los datos enviados cumplan las validaciones.
+            if (!ModelState.IsValid)
+            {
+                // Recopila los mensajes de validación para devolverlos al navegador.
+                var errores = ModelState
+                    .Where(campo => campo.Value.Errors.Count > 0)
+                    .SelectMany(campo => campo.Value.Errors.Select(
+                        error => error.ErrorMessage))
+                    .ToList();
+
+                return Json(new
+                {
+                    success = false,
+                    errores = errores
+                });
+            }
+
+            try
+            {
+                // Guarda el nuevo empleado utilizando el método existente.
+                db.InsertarEmpleado(empleado);
+
+                // Informa al navegador que la operación terminó correctamente.
+                return Json(new
+                {
+                    success = true,
+                    mensaje = "Empleado creado correctamente."
+                });
+            }
+            catch (Exception ex)
+            {
+                // Devuelve el error para que el formulario pueda informar al usuario.
+                return Json(new
+                {
+                    success = false,
+                    errores = new[] {
+                        "No fue posible guardar el empleado: " + ex.Message
+                    }
+                });
+            }
+        }
+
+
+
+
+
         public ActionResult Index()
         {
             using (var db = new PviLabDataConnection())

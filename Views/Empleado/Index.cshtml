@@ -1,13 +1,23 @@
-﻿@{
+﻿
+@{
     ViewBag.Title = "Empleados";
 }
 
 <h2>Lista de Empleados</h2>
 
+@* Botón para abrir el formulario de creación. *@
+<p>
+    <button type="button"
+            id="btnCrearEmpleado"
+            class="btn btn-success">
+        Crear empleado
+    </button>
+</p>
 
-
+@* Tabla con la información de los empleados. *@
 <div class="table-responsive">
     <table class="table table-bordered table-striped table-hover">
+
         <thead>
             <tr>
                 <th>ID</th>
@@ -30,6 +40,7 @@
                     <td>@empleado.Provincia</td>
                     <td>@empleado.Canton</td>
                     <td>@empleado.Distrito</td>
+
                     <td>
                         @Html.ActionLink(
                             "Editar",
@@ -40,8 +51,353 @@
                         )
                     </td>
                 </tr>
-
             }
         </tbody>
+
     </table>
 </div>
+
+@* Contenedor del diálogo.
+    Debe estar fuera de la tabla y de table-responsive. *@
+<div id="dialogCrearEmpleado"
+     title="Crear empleado"
+     style="display:none;">
+
+    @* El formulario parcial se carga aquí mediante AJAX. *@
+
+</div>
+
+@section scripts {
+
+    <script>
+
+        // Espera a que jQuery termine de cargar.
+        $(document).ready(function () {
+
+            // Referencia al contenedor del diálogo.
+            var dialogo = $("#dialogCrearEmpleado");
+
+
+            dialogo.dialog({
+                autoOpen: false,
+                modal: true,
+                width: 600,
+                resizable: false,
+                title: "Crear empleado",
+                closeOnEscape: true,
+
+                // Centra la ventana en la pantalla.
+                position: {
+                    my: "center",
+                    at: "center",
+                    of: window
+                },
+
+                // Permite que el diálogo ajuste su altura.
+                height: "auto",
+
+                // Mantiene la ventana dentro de la pantalla.
+                minHeight: 200,
+
+                // Evita que el diálogo quede demasiado alto.
+                maxHeight: 600
+            });
+
+
+            // Evento para abrir el formulario.
+            $("#btnCrearEmpleado").on("click", function () {
+
+
+
+
+                // Solicita la vista parcial al controlador.
+                $.ajax({
+                    url: '@Url.Action("CrearEmpleadoAjax", "Empleado")',
+                    type: "GET",
+
+                    success: function (html) {
+
+                        // Inserta el formulario recibido.
+                        dialogo.html(html);
+
+                        // Carga las provincias disponibles.
+                    $.ajax({
+                        url: '@Url.Action("ObtenerProvincias", "Empleado")',
+                        type: "GET",
+
+                        success: function (provincias) {
+
+                            var provincia = $("#IdProvincia");
+
+                            provincia.empty();
+
+                            provincia.append(
+                                $("<option>").val("").text("Seleccione una provincia")
+                            );
+
+                            $.each(provincias, function (index, item) {
+
+                                provincia.append(
+                                    $("<option>")
+                                        .val(item.Value)
+                                        .text(item.Text)
+                                );
+
+                            });
+
+                        },
+
+                        error: function (xhr) {
+
+                            alert("No fue posible cargar las provincias. Código: " + xhr.status);
+
+                        }
+                    });
+
+
+
+
+
+
+                        // Abre la ventana modal.
+                        dialogo.dialog("open");
+
+                    },
+
+                    error: function (xhr) {
+
+                        // Informa si no se pudo cargar el formulario.
+                        alert(
+                            "No fue posible cargar el formulario. " +
+                            "Código: " + xhr.status
+                        );
+
+                    }
+                });
+
+            });
+
+
+
+            // Cuando se selecciona una provincia.
+            $(document).on("change", "#IdProvincia", function () {
+
+                var idProvincia = $(this).val();
+
+                var canton = $("#IdCanton");
+                var distrito = $("#IdDistrito");
+
+                // Reinicia Cantón y Distrito.
+                canton.empty();
+                distrito.empty();
+
+                canton.append(
+                    $("<option>").val("").text("Seleccione un cantón")
+                );
+
+                distrito.append(
+                    $("<option>").val("").text("Seleccione un distrito")
+                );
+
+                // Distrito permanece deshabilitado.
+                distrito.prop("disabled", true);
+
+                // Si no hay provincia seleccionada.
+                if (idProvincia === "") {
+
+                    canton.prop("disabled", true);
+                    return;
+
+                }
+
+                // Carga los cantones de la provincia.
+                $.ajax({
+
+                    url: '@Url.Action("ObtenerCantones", "Empleado")',
+
+                    type: "GET",
+
+                    data: {
+                        idProvincia: idProvincia
+                    },
+
+                    success: function (cantones) {
+
+                        $.each(cantones, function (index, item) {
+
+                            canton.append(
+                                $("<option>")
+                                    .val(item.Value)
+                                    .text(item.Text)
+                            );
+
+                        });
+
+                        // Habilita Cantón.
+                        canton.prop("disabled", false);
+
+                    },
+
+                    error: function (xhr) {
+
+                        alert(
+                            "No fue posible cargar los cantones. Código: " +
+                            xhr.status
+                        );
+
+                    }
+
+                });
+
+            });
+
+
+
+
+
+            // Cuando se selecciona un cantón.
+            $(document).on("change", "#IdCanton", function () {
+
+                var idCanton = $(this).val();
+
+                var distrito = $("#IdDistrito");
+
+                // Reinicia Distrito.
+                distrito.empty();
+
+                distrito.append(
+                    $("<option>").val("").text("Seleccione un distrito")
+                );
+
+                // Si no hay cantón seleccionado.
+                if (idCanton === "") {
+
+                    distrito.prop("disabled", true);
+                    return;
+
+                }
+
+                // Carga los distritos del cantón.
+                $.ajax({
+
+                    url: '@Url.Action("ObtenerDistritosPorCanton", "Empleado")',
+
+                    type: "GET",
+
+                    data: {
+                        idCanton: idCanton
+                    },
+
+                    success: function (distritos) {
+
+                        $.each(distritos, function (index, item) {
+
+                            distrito.append(
+                                $("<option>")
+                                    .val(item.Value)
+                                    .text(item.Text)
+                            );
+
+                        });
+
+                        // Habilita Distrito.
+                        distrito.prop("disabled", false);
+
+                    },
+
+                    error: function (xhr) {
+
+                        alert(
+                            "No fue posible cargar los distritos. Código: " +
+                            xhr.status
+                        );
+
+                    }
+
+                });
+
+            });
+
+
+
+
+
+
+
+
+
+            // Evento para guardar el formulario parcial.
+            // Se registra una sola vez al cargar la página.
+            $(document).on(
+                "submit",
+                "#formCrearEmpleado",
+                function (event) {
+
+                    // Evita el envío tradicional.
+                    event.preventDefault();
+
+                    // Obtiene el formulario.
+                    var formulario = $(this);
+
+                    // Envía los datos al controlador.
+                    $.ajax({
+
+                        url: formulario.attr("action"),
+
+                        type: "POST",
+
+                        data: formulario.serialize(),
+
+                        success: function (respuesta) {
+
+                            // Comprueba si el servidor guardó el empleado.
+                            if (respuesta.success) {
+
+                                // Cierra el diálogo.
+                                dialogo.dialog("close");
+
+                                // Muestra el mensaje.
+                                alert(respuesta.mensaje);
+
+                                // Actualiza la lista.
+                                window.location.reload();
+
+                            } else {
+
+                                // Obtiene los errores.
+                                var mensaje = "";
+
+                                if (respuesta.errores) {
+                                    mensaje = respuesta.errores.join("\n");
+                                }
+
+                                // Muestra los errores.
+                                alert(
+                                    mensaje ||
+                                    "Revisá los datos del formulario."
+                                );
+
+                            }
+
+                        },
+
+                        error: function (xhr) {
+
+                            // Informa errores de comunicación.
+                            alert(
+                                "Ocurrió un error al guardar el empleado. " +
+                                "Código: " + xhr.status
+                            );
+
+                        }
+
+                    });
+
+                }
+            );
+
+        });
+
+    </script>
+
+}

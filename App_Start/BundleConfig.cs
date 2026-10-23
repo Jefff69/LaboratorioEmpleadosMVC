@@ -1,30 +1,41 @@
-﻿using System.Web;
+﻿
+using System.Web;
 using System.Web.Optimization;
 
 namespace LaboratorioEmpleadosMVC
 {
     public class BundleConfig
     {
-        // For more information on bundling, visit https://go.microsoft.com/fwlink/?LinkId=301862
         public static void RegisterBundles(BundleCollection bundles)
         {
+            // Carga jQuery.
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
-                        "~/Scripts/jquery-{version}.js"));
+                "~/Scripts/jquery-3.7.0.js"));
 
+            // Carga jQuery UI para utilizar el diálogo.
+            bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include(
+                "~/Scripts/jquery-ui-1.14.1.js"));
+
+            // Carga las validaciones de formularios.
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
-                        "~/Scripts/jquery.validate*"));
+                "~/Scripts/jquery.validate.js"));
 
-            // Use the development version of Modernizr to develop with and learn from. Then, when you're
-            // ready for production, use the build tool at https://modernizr.com to pick only the tests you need.
+            // Carga Modernizr.
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
-                        "~/Scripts/modernizr-*"));
+                "~/Scripts/modernizr-*"));
 
+            // Carga Bootstrap.
             bundles.Add(new Bundle("~/bundles/bootstrap").Include(
-                      "~/Scripts/bootstrap.js"));
+                "~/Scripts/bootstrap.js"));
 
+            // Estilos principales.
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                      "~/Content/bootstrap.css",
-                      "~/Content/site.css"));
+                "~/Content/bootstrap.css",
+                "~/Content/site.css"));
+
+            // Estilos de jQuery UI.
+            bundles.Add(new StyleBundle("~/Content/jqueryui")
+                .Include("~/Content/themes/base/jquery-ui.css"));
         }
     }
 }
